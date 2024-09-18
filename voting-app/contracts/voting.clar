@@ -1,22 +1,14 @@
-(define-data-var election-candidates (list 10 (tuple (candidate-name (buff 20)) (vote-count uint))) (list))
-(define-map candidate-votes {candidate-name: (buff 20)} uint)
-(define-map voters-map {voter-address: principal} bool)
-
-(define-public (register-candidate (candidate-name (buff 20)))
-  (begin
-    (asserts! (is-eq tx-sender (as-contract tx-sender)) (err u100))
-    
-    ;; Add the candidate with an initial vote count of 0
-    (map-insert candidate-votes {candidate-name: candidate-name} u0)
-    (ok candidate-name)
-  )
+;; Helper function to check if the voter has already voted
+(define-private (has-voted (voter principal))
+  (is-some (map-get voters-map {voter-address: voter}))
 )
 
 (define-public (cast-vote (candidate-name (buff 20)))
   (begin
-    (asserts! (is-none (map-get voters-map {voter-address: tx-sender})) (err u101))
+    ;; Ensure the user hasn't already voted by calling the helper function
+    (asserts! (not (has-voted tx-sender)) (err u101))
 
-    ;; Retrieve and increment the candidate's vote count
+    ;; Increment the candidate's vote count
     (let ((current-votes (default-to u0 (map-get candidate-votes {candidate-name: candidate-name}))))
       (map-insert candidate-votes {candidate-name: candidate-name} (+ current-votes u1)))
 
@@ -24,8 +16,4 @@
     (map-insert voters-map {voter-address: tx-sender} true)
     (ok u1)
   )
-)
-
-(define-public (view-results)
-  (ok (map-get candidate-votes))
 )
