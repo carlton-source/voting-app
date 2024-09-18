@@ -7,6 +7,7 @@ dotenv.config(); // Load environment variables
 
 const app = express();
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
+app.use(express.static('public')); // Serve static files from the "public" directory
 app.use('/auth', authRoutes); // Define /auth routes
 app.use('/voting', votingRoutes);
 
