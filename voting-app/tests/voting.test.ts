@@ -17,5 +17,17 @@ Clarinet.test({
     ]);
 
     addCandidate.receipts[0].result.expectOk();
+
+    // Vote for the candidate
+    let vote = chain.mineBlock([
+      Tx.contractCall(
+        "voting",
+        "submit-vote",
+        [types.buff("Alice")],
+        voter.address
+      ),
+    ]);
+
+    vote.receipts[0].result.expectOk();
   },
 });
