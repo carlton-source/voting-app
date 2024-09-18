@@ -5,5 +5,17 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let voter = accounts.get("wallet_1")!;
+
+    // Add a candidate
+    let addCandidate = chain.mineBlock([
+      Tx.contractCall(
+        "voting",
+        "add-candidate",
+        [types.buff("Alice")],
+        deployer.address
+      ),
+    ]);
+
+    addCandidate.receipts[0].result.expectOk();
   },
 });
