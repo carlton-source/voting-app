@@ -21,3 +21,7 @@ document.getElementById('voteForm').addEventListener('submit', async function (e
 		alert('Error submitting vote');
 	}
 });
+
+document.getElementById('fetchResultsBtn').addEventListener('click', async function () {
+	// Logic to fetch and display results will be added here
+});
