@@ -29,5 +29,14 @@ Clarinet.test({
     ]);
 
     vote.receipts[0].result.expectOk();
+
+    // Check results
+    let results = chain.callReadOnlyFn(
+      "voting",
+      "get-results",
+      [],
+      deployer.address
+    );
+    results.result.expectOk().expectList();
   },
 });
