@@ -41,3 +41,19 @@ const submitVote = async (voterPrivateKey, candidateName) => {
 		throw error;
 	}
 };
+
+
+const getResults = async () => {
+	const contractAddress = process.env.CONTRACT_ADDRESS;
+	const contractName = process.env.CONTRACT_NAME;
+
+	const url = `https://stacks-node-api.testnet.stacks.co/v2/contracts/call-read/${contractAddress}/${contractName}/get-results`;
+
+	try {
+		const response = await axios.get(url);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching results:', error);
+		throw error;
+	}
+};
