@@ -1,48 +1,43 @@
-;; Variable to store election candidates
-(define-data-var election-candidates (list 10 (tuple (candidate-name (buff 20)) (vote-count uint))) (list))
+;; Define a list to store candidates with their vote counts
+(define-data-var candidates (list 10 (tuple (name (buff 20)) (votes uint))) (list))
 
-;; Map for candidate votes
-(define-map candidate-votes {candidate-name: (buff 20)} uint)
+;; Define a map to keep track of users who have voted
+(define-map votes-map {voter: principal} bool)
 
-;; Map to track voters
-(define-map voters-map {voter-address: principal} bool)
-
-;; Error constants
-(define-constant ERR-NOT-DEPLOYER u100)
-(define-constant ERR-ALREADY-VOTED u101)
-(define-constant ERR-CANDIDATE-NOT-FOUND u102)
-
-;; Helper function to check if the user has voted
-(define-private (has-voted (voter principal))
-  (is-some (map-get voters-map {voter-address: voter}))
-)
-
-;; Function to register candidates (only deployer)
-(define-public (register-candidate (candidate-name (buff 20)))
+;; Function to add a candidate to the list
+;; Only the contract deployer can add candidates
+(define-public (add-candidate (candidate-name (buff 20)))
   (begin
-    (asserts! (is-eq tx-sender (as-contract tx-sender)) (err ERR-NOT-DEPLOYER))
-    (map-insert candidate-votes {candidate-name: candidate-name} u0)
+    ;; Check if the caller is the contract deployer
+    (asserts! (is-eq tx-sender (as-contract tx-sender)) (err u100 "Only the contract deployer can add candidates"))
+    ;; Add the new candidate to the list
+    (var-set candidates (cons {name: candidate-name, votes: u0} (var-get candidates)))
     (ok candidate-name)
   )
 )
 
-;; Function to allow users to vote for a candidate
-(define-public (cast-vote (candidate-name (buff 20)))
+;; Function to submit a vote for a specific candidate
+(define-public (submit-vote (candidate-name (buff 20)))
   (begin
-    (asserts! (not (has-voted tx-sender)) (err ERR-ALREADY-VOTED))
-    (asserts! (is-some (map-get candidate-votes {candidate-name: candidate-name})) (err ERR-CANDIDATE-NOT-FOUND))
-    
-    ;; Increment the vote count for the selected candidate
-    (let ((current-votes (default-to u0 (map-get candidate-votes {candidate-name: candidate-name}))))
-      (map-insert candidate-votes {candidate-name: candidate-name} (+ current-votes u1)))
+    ;; Ensure the voter has not voted before
+    (asserts! (is-none (map-get votes-map {voter: tx-sender})) (err u101 "You have already voted"))
 
+    ;; Find and update the candidate's vote count
+    (let ((updated-candidates (map (lambda (candidate)
+                                     (if (buff-eq? candidate-name (get name candidate))
+                                         (tuple (name (get name candidate)) (votes (+ (get votes candidate) u1)))
+                                         candidate))
+                                   (var-get candidates))))
+      (var-set candidates updated-candidates))
+    
     ;; Mark the voter as having voted
-    (map-insert voters-map {voter-address: tx-sender} true)
+    (map-insert votes-map {voter: tx-sender} true)
+    
     (ok u1)
   )
 )
 
-;; Function to view election results
-(define-public (view-results)
-  (ok (map-get candidate-votes))
+;; Function to get the list of candidates and their vote counts
+(define-public (get-results)
+  (ok (var-get candidates))
 )
