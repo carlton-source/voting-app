@@ -19,3 +19,8 @@ const results = async (req, res) => {
 		res.status(500).json({ error: 'Error fetching results' });
 	}
 };
+
+module.exports = {
+	vote,
+	results,
+};
