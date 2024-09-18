@@ -1,44 +1,41 @@
-;; Define a list to store candidates with their vote counts
-(define-data-var candidate-list (list 10 (tuple (name (buff 20)) (vote-count uint))) (list))
+;; Variable to store a list of candidates, each with a name and vote count
+(define-data-var election-candidates (list 10 (tuple (candidate-name (buff 20)) (vote-count uint))) (list))
 
-;; Define a map to keep track of users who have voted
-(define-map voter-votes {voter: principal} bool)
+;; Map to track which users (voters) have already voted
+(define-map voters-map {voter-address: principal} bool)
 
-;; Function to add a candidate to the list
-;; Only the contract deployer can add candidates
-(define-public (add-candidate (candidate-name (buff 20)))
+;; Function to allow only the contract deployer to register new candidates
+(define-public (register-candidate (candidate-name (buff 20)))
   (begin
-    ;; Check if the caller is the contract deployer
+    ;; Ensure the caller is the contract itself (deployer)
     (asserts! (is-eq tx-sender (as-contract tx-sender)) (err u100))
-    ;; Add the new candidate to the list
-    (var-set candidate-list (cons {name: candidate-name, vote-count: u0} (var-get candidate-list)))
+    
+    ;; Add the candidate with a vote count of 0
+    (var-set election-candidates (cons {candidate-name: candidate-name, vote-count: u0} (var-get election-candidates)))
     (ok candidate-name)
   )
 )
 
-;; Function to submit a vote for a specific candidate
-(define-public (submit-vote (candidate-name (buff 20)))
+;; Function to allow users to cast their vote for a specific candidate
+(define-public (cast-vote (candidate-name (buff 20)))
   (begin
-    ;; Ensure the voter has not voted before
-    (asserts! (is-none (map-get voter-votes {voter: tx-sender})) (err u101))
+    ;; Ensure the user hasn't already voted
+    (asserts! (is-none (map-get voters-map {voter-address: tx-sender})) (err u101))
 
-    ;; Find and update the candidate's vote count
-    (let ((updated-candidates (map (lambda (candidate)
-                                     (if (buff-eq? candidate-name (get name candidate))
-                                         (tuple (name (get name candidate)) (vote-count (+ (get vote-count candidate) u1)))
-                                         candidate))
-                                   (var-get candidate-list))))
-      (var-set candidate-list updated-candidates)
-    )
-
-    ;; Mark the voter as having voted
-    (map-insert voter-votes {voter: tx-sender} true)
+    ;; Search for the candidate and increase their vote count
+    (map (lambda (candidate)
+           (if (buff-eq? candidate-name (get candidate-name candidate))
+               (tuple (candidate-name (get candidate-name candidate)) (vote-count (+ (get vote-count candidate) u1)))
+               candidate))
+         (var-get election-candidates))
     
+    ;; Mark the user as having voted
+    (map-insert voters-map {voter-address: tx-sender} true)
     (ok u1)
   )
 )
 
-;; Function to retrieve the list of candidates and their vote counts
-(define-public (get-results)
-  (ok (var-get candidate-list))
+;; Function to retrieve the list of all candidates and their vote counts
+(define-public (view-results)
+  (ok (var-get election-candidates))
 )
