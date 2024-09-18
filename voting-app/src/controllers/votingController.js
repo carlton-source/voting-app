@@ -10,3 +10,12 @@ const vote = async (req, res) => {
 		res.status(500).json({ error: 'Error submitting vote' });
 	}
 };
+
+const results = async (req, res) => {
+	try {
+		const voteResults = await getResults();
+		res.status(200).json(voteResults);
+	} catch (error) {
+		res.status(500).json({ error: 'Error fetching results' });
+	}
+};
