@@ -5,7 +5,11 @@ const {
 	uintCV,
 	bufferCV,
 	PostConditionMode,
-  } = require('@stacks/transactions');
-  const { StacksTestnet } = require('@stacks/network');
-  const axios = require('axios');
-  const { privateKey } = process.env;
+} = require('@stacks/transactions');
+const { StacksTestnet } = require('@stacks/network');
+const axios = require('axios');
+const { privateKey } = process.env;
+
+const { StacksTestnet } = require('@stacks/network');
+
+const network = new StacksTestnet();
