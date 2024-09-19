@@ -2,8 +2,6 @@
 
 Building a backend system for a decentralized voting application. It will interact with the Stacks blockchain through a Clarity smart contract for voting, while the backend, built with Node.js, will handle authentication and API requests.
 
-Certainly! Let’s create the **`documentation`** feature branch based on the comprehensive details provided throughout the project. This branch will include all necessary documentation to ensure clarity and usability for future developers and users.
-
 ## Setup
 
 ### Prerequisites
