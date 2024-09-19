@@ -52,7 +52,6 @@ Certainly! Let’s create the **`documentation`** feature branch based on the co
 
 See `CONTRIBUTING.md` for guidelines.
 
-
 ### **Project Structure**
 
 #### **Backend (Node.js) Directory Structure:**
@@ -118,6 +117,7 @@ I'll create the following branches to develop each feature independently before 
 #### **1. Setup Node.js Backend**
 
 1. **Initialize the project**:
+
    ```bash
    mkdir voting-app-backend
    cd voting-app-backend
@@ -125,17 +125,20 @@ I'll create the following branches to develop each feature independently before 
    ```
 
 2. **Install necessary dependencies**:
+
    ```bash
    npm install express dotenv stacks network stacks transactions
    npm install --save-dev jest supertest
    ```
 
 3. **Create essential files**:
+
    - `server.js`: Entry point for the application.
    - `app.js`: Express configuration and middleware setup.
    - Routes, controllers, and services as per the structure outlined.
 
 4. **Setup `.env` file** for environment variables:
+
    - **Stacks API URL**: Points to the Stacks Testnet or Mainnet.
    - **MongoDB connection string** (optional).
    - **PORT**: The port for running the Node.js server.
@@ -147,11 +150,13 @@ I'll create the following branches to develop each feature independently before 
 #### **2. Build the Clarity Smart Contract**
 
 1. **Create the contract** (`voting.clar`):
+
    - Define the following functions:
      - **Submit vote**: Allows each authenticated user to cast a vote.
      - **Tally results**: Aggregates votes after the voting period ends.
 
 2. **Deploy the contract** to the Stacks Testnet:
+
    - Use the **Stacks CLI** to deploy the contract:
      ```bash
      clarinet deploy contracts/voting.clar
@@ -164,10 +169,12 @@ I'll create the following branches to develop each feature independently before 
 #### **3. Connect Backend to Clarity Smart Contract**
 
 1. **Set up interactions with the contract** in the `clarityService.js`:
+
    - Use `stacks.js` to send transactions and interact with the deployed contract.
    - Implement functions for submitting votes and retrieving results.
 
 2. **Handle vote submission** (`vote.js`):
+
    - Implement the `POST /vote` endpoint to submit a vote to the blockchain via the Clarity smart contract.
    - Ensure each authenticated user can only vote once.
 
@@ -177,39 +184,31 @@ I'll create the following branches to develop each feature independently before 
 #### **4. Add Testing and Continuous Integration**
 
 1. **Set up unit tests** for the backend:
+
    - Test the API endpoints using Jest and Supertest.
 
 2. **Write integration tests** for the Clarity contract:
    - Ensure all edge cases are covered, such as multiple votes and invalid submissions.
-
-3. **Set up CI/CD**:
-   - Use GitHub Actions or Travis CI for continuous integration to automatically run tests on each push or pull request.
-
-#### **5. Deployment**
-
-1. **Deploy the backend** to a cloud platform like **Heroku** or **AWS**.
-   - Use Docker for containerization if needed (Dockerfile is already set up).
-
-2. **Deploy the Clarity smart contract** to the Stacks Mainnet once everything is tested and verified on Testnet.
-
----
 
 ### **Documentation for Setup**
 
 #### **Backend Setup:**
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/your-username/voting-app-backend.git
    cd voting-app-backend
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 3. **Create `.env` file** with environment variables:
+
    ```bash
    PORT=3000
    STACKS_API_URL=https://stacks-node-api.testnet.stacks.co
@@ -223,12 +222,14 @@ I'll create the following branches to develop each feature independently before 
 #### **Clarity Smart Contract Setup:**
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/your-username/voting-app-contract.git
    cd voting-app-contract
    ```
 
 2. **Deploy the contract**:
+
    ```bash
    clarinet deploy contracts/voting.clar
    ```
